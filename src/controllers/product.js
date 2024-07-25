@@ -1,8 +1,9 @@
+import Category from "../models/category.js";
 import Product from "../models/product.js";
 
 export const getAllProduct = async (req, res, next) => {
   try {
-    const data = await Product.find();
+    const data = await Product.find().populate("category");
 
     if (data) {
       return res.status(200).json({
@@ -20,37 +21,44 @@ export const getOneProduct = async (req, res, next) => {
   try {
     const id = req.params.id;
 
-    const data = await Product.findById(id);
+    const data = await Product.findById(id).populate("category");
     console.log(data);
 
     if (data) {
-        return res.status(200).json({
-          success: true,
-          data,
-          message: "lay san pham theo id thanh cong",
-        });
-      }
+      return res.status(200).json({
+        success: true,
+        data,
+        message: "lay san pham theo id thanh cong",
+      });
+    }
   } catch (error) {
-   next(error)
+    next(error);
   }
 };
 
 export const createProduct = async (req, res, next) => {
   try {
-    const body = req.body;
-
-    const data = await Product.create(body);
-    console.log(data);
-
+    console.log("createProduct");
+    const data = await Product.create(req.body);
     if (data) {
-        return res.status(200).json({
+      console.log(data);
+      const updateCategory = await Category.findByIdAndUpdate(
+        req.body.category,
+        {
+          $push: { products: data._id },
+        },
+        { new: true }
+      );
+      if (data && updateCategory) {
+        return res.status(201).json({
           success: true,
           data,
-          message: "tao san pham thanh cong",
+          message: "Tao san pham thanh cong!",
         });
       }
+    }
   } catch (error) {
-   next(error)
+    next(error);
   }
 };
 
@@ -62,14 +70,14 @@ export const deleteProduct = async (req, res) => {
     console.log(data);
 
     if (data) {
-        return res.status(200).json({
-          success: true,
-          data,
-          message: "xoa san pham thanh cong",
-        });
-      }
+      return res.status(200).json({
+        success: true,
+        data,
+        message: "xoa san pham thanh cong",
+      });
+    }
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
@@ -82,15 +90,14 @@ export const updateProduct = async (req, res) => {
     );
     console.log(data);
 
-    
     if (data) {
-        return res.status(200).json({
-          success: true,
-          data,
-          message: "sua san pham thanh cong",
-        });
-      }
+      return res.status(200).json({
+        success: true,
+        data,
+        message: "sua san pham thanh cong",
+      });
+    }
   } catch (error) {
-   next(error)
+    next(error);
   }
 };

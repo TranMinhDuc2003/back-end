@@ -20,6 +20,10 @@ const productSchema = new mongoose.Schema(
       type: String,
       require: [true, "images is required"]
     },
+    category:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category"
+    }
   },
   { timestamps: true, versionKey: false }
 );
