@@ -5,11 +5,11 @@ import {
   getAllProduct,
   getOneProduct,
   updateProduct,
-} from "../controllers/product";
-import { productSchema } from "../validSchema/productSchema";
-import { validBodyRequest } from "../middlewares/validBodyRequest";
-import { checkAuth } from "../middlewares/checkAuth";
-import { checkIsAdmin } from "../middlewares/checkIsAdmin";
+} from "../controllers/product.js";
+import { productSchema } from "../validSchema/productSchema.js";
+import { validBodyRequest } from "../middlewares/validBodyRequest.js";
+import { checkAuth } from "../middlewares/checkAuth.js";
+import { checkIsAdmin } from "../middlewares/checkIsAdmin.js";
 
 const routerProduct = Router();
 

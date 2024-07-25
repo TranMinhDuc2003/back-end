@@ -1,5 +1,5 @@
-import User from "../models/user";
-import { verifyToken } from "../ultis/jwt";
+import User from "../models/user.js";
+import { verifyToken } from "../ultis/jwt.js";
 
 export const checkAuth = async (req, res, next) => {
   try {

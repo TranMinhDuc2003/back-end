@@ -1,6 +1,6 @@
-import User from "../models/user";
-import { generateToken } from "../ultis/jwt";
-import { comparePassword, hassPassword } from "../ultis/password";
+import User from "../models/user.js";
+import { generateToken } from "../ultis/jwt.js";
+import { comparePassword, hassPassword } from "../ultis/password.js";
 
 export const register = async (req, res, next) => {
   try {
