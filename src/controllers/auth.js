@@ -1,4 +1,5 @@
 import User from "../models/user.js";
+import { sendEmail } from "../ultis/email.js";
 import { generateToken } from "../ultis/jwt.js";
 import { comparePassword, hassPassword } from "../ultis/password.js";
 
@@ -66,3 +67,37 @@ export const login = async (req, res, next) => {
     next(error);
   }
 };
+
+export const forgotPassword = async (req,res,next) => {
+  try {
+    const {email} = req.body
+    const user = await User.findOne({email})
+
+    if(!user){
+      return res.status(404).json({
+        message: "email chua duoc dang ky"
+      })
+    }
+
+    const newPass = Math.random().toString(36).slice(-8)
+    const hassPass = hassPassword(newPass)
+
+    if(!hassPass){
+      return res.status(500).json({
+        message: "ma hoa that bai"
+      })
+    }
+    
+    user.password = hassPass
+    await user.save()
+
+    const emailSubject = "Password Reset in Node.js App by @tduc8110"
+    const emailText = `your new password is: ${newPass}`
+    await sendEmail(email, emailSubject,emailText)
+    return res.status(200).json({
+      message: "reset password successfuly"
+    })
+  } catch (error) {
+    next(error)
+  }
+}
