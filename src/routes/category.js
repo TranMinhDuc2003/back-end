@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { createCategory, deleteCategory, getAllCategory, getCategoryById, updateCategoryById } from "../controllers/category.js";
-import router from "./index.js";
 import { checkAuth } from "../middlewares/checkAuth.js";
 import { checkIsAdmin } from "../middlewares/checkIsAdmin.js";
 import { validBodyRequest } from "../middlewares/validBodyRequest.js";
