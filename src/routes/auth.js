@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { forgotPassword, login, register } from "../controllers/auth.js";
+import { forgotPassword, login, register, resetPassword } from "../controllers/auth.js";
 import { validBodyRequest } from "../middlewares/validBodyRequest.js";
 import { authSchema } from "../validSchema/authSchema.js";
 import { showProfile } from "../controllers/user.js";
@@ -12,4 +12,5 @@ routerAuth.post('/forgot' ,forgotPassword)
 
 routerAuth.use('/',checkAuth)
 routerAuth.get('/me', showProfile)
+routerAuth.get('/reset/:id', resetPassword)
 export default routerAuth;

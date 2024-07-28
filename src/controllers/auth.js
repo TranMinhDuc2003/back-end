@@ -39,65 +39,103 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-		const useExists = await User.findOne({ email });
-		// console.log(useExists);
-		if (!useExists) {
-			return res.status(404).json({
-				message: "Email chua dang ky!",
-			});
-		}
+    const useExists = await User.findOne({ email });
+    // console.log(useExists);
+    if (!useExists) {
+      return res.status(404).json({
+        message: "Email chua dang ky!",
+      });
+    }
 
-   const isMatch = comparePassword(password, useExists.password);
-		if (!isMatch) {
-			return res.status(400).json({
-				message: "Mat khau khong dung!",
-			});
-		}
+    const isMatch = comparePassword(password, useExists.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Mat khau khong dung!",
+      });
+    }
     const token = generateToken({ _id: useExists._id }, "100d");
-		useExists.password = undefined;
+    useExists.password = undefined;
 
-		return res.status(200).json({
-			success: true,
-			user: useExists,
-			accessToken: token,
-			message: "Login successfully!",
-		});
-
+    return res.status(200).json({
+      success: true,
+      user: useExists,
+      accessToken: token,
+      message: "Login successfully!",
+    });
   } catch (error) {
     next(error);
   }
 };
 
-export const forgotPassword = async (req,res,next) => {
+export const forgotPassword = async (req, res, next) => {
   try {
-    const {email} = req.body
-    const user = await User.findOne({email})
+    const { email } = req.body;
+    const user = await User.findOne({ email });
 
+    if (!user) {
+      return res.status(404).json({
+        message: "email chua duoc dang ky",
+      });
+    }
+
+    const newPass = Math.random().toString(36).slice(-8);
+    const hassPass = hassPassword(newPass);
+
+    if (!hassPass) {
+      return res.status(500).json({
+        message: "ma hoa that bai",
+      });
+    }
+
+    user.password = hassPass;
+    await user.save();
+
+    const emailSubject = "Password Reset in Node.js App by @tduc8110";
+    const emailText = `your new password is: ${newPass}`;
+    await sendEmail(email, emailSubject, emailText);
+    return res.status(200).json({
+      message: "forgot password successfuly",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const { password, newPass } = req.body;
+
+    const user = await User.findById(id)
     if(!user){
       return res.status(404).json({
-        message: "email chua duoc dang ky"
+        message: "nguoi dung khong ton tai"
       })
     }
 
-    const newPass = Math.random().toString(36).slice(-8)
-    const hassPass = hassPassword(newPass)
+    const isMatch = comparePassword(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Mat khau cu khong dung!",
+      });
+    }
 
+    const hassPass = hassPassword(newPass)
     if(!hassPass){
-      return res.status(500).json({
+      return res.status(400).json({
         message: "ma hoa that bai"
       })
     }
-    
+
     user.password = hassPass
     await user.save()
 
-    const emailSubject = "Password Reset in Node.js App by @tduc8110"
-    const emailText = `your new password is: ${newPass}`
-    await sendEmail(email, emailSubject,emailText)
-    return res.status(200).json({
-      message: "reset password successfuly"
+    res.status(200).json({
+      success: true,
+      user,
+      message: "doi mat khau thanh cong"
     })
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
