@@ -118,3 +118,22 @@ export const deleteProductCart = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteCart = async (req,res,next) => {
+  try {
+    const id = req.params.id
+    const data = await Cart.findByIdAndDelete(id)
+    if(!data){
+      return res.status(404).json({
+        message: "not found"
+      })
+    }
+    return res.status(200).json({
+      success: true,
+      data,
+      message: "Delete cart successfuly"
+    })
+  } catch (error) {
+    next(error)
+  }
+}
