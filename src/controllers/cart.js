@@ -57,14 +57,13 @@ export const createCart = async (req, res, next) => {
         (item) => item.product && item.product.toString() === product
       );
 
-      if (productIndex > -1) {
-        // Sản phẩm đã có trong giỏ hàng, cập nhật số lượng
-        cart.products[productIndex].quantity += quantity;
-      } else {
-        // Sản phẩm chưa có trong giỏ hàng, thêm sản phẩm mới
+      if (productIndex === -1) {
+        // Nếu sản phẩm này chưa từng có trong giỏ hàng, cần thêm sản phẩm này cùng số lượng vào giỏ hàng,
         cart.products.push({ product, quantity });
+      } else {
+        // Nếu sản phẩm này đã có trong giỏ hàng, cần cập nhật số lượng sản phẩm trong giỏ hàng,
+        cart.products[productIndex].quantity += quantity;
       }
-
       await cart.save();
       return res.status(200).json({
         success: true,
@@ -107,33 +106,33 @@ export const deleteProductCart = async (req, res, next) => {
       { new: true }
     );
 
-    if(data && updateCart){
+    if (data && updateCart) {
       return res.status(200).json({
         success: true,
         data,
-        message: "delete product cart successfult"
-      })
+        message: "delete product cart successfult",
+      });
     }
   } catch (error) {
     next(error);
   }
 };
 
-export const deleteCart = async (req,res,next) => {
+export const deleteCart = async (req, res, next) => {
   try {
-    const id = req.params.id
-    const data = await Cart.findByIdAndDelete(id)
-    if(!data){
+    const id = req.params.id;
+    const data = await Cart.findByIdAndDelete(id);
+    if (!data) {
       return res.status(404).json({
-        message: "not found"
-      })
+        message: "not found",
+      });
     }
     return res.status(200).json({
       success: true,
       data,
-      message: "Delete cart successfuly"
-    })
+      message: "Delete cart successfuly",
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
